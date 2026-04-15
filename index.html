@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kai Song — Open Source Data Tools</title>
+<meta name="description" content="Open source data engineering tools: data quality monitoring, natural language SQL analytics, and ETL pipelines. Built to ship, not just demo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #04060f;
+  --bg2: #070b17;
+  --surface: #0b1120;
+  --surface2: #0f1729;
+  --border: #1a2640;
+  --border2: #243350;
+  --text: #dde4f0;
+  --muted: #5a7090;
+  --muted2: #7a94b8;
+  --accent: #00d9f5;
+  --accent-dim: rgba(0,217,245,0.1);
+  --accent-dim2: rgba(0,217,245,0.18);
+  --amber: #ffb547;
+  --amber-dim: rgba(255,181,71,0.1);
+  --green: #3dffa0;
+  --green-dim: rgba(61,255,160,0.1);
+  --rose: #ff6b9d;
+  --rose-dim: rgba(255,107,157,0.1);
+  --violet: #a78bfa;
+  --violet-dim: rgba(167,139,250,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── Nav ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0.9rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(4,6,15,0.85);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(26,38,64,0.6);
+  transition: all 0.3s;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.logo .dot { color: var(--accent); }
+
+nav .links { display: flex; gap: 1.75rem; align-items: center; }
+nav .links a {
+  color: var(--muted2);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+nav .links a:hover { color: var(--text); }
+
+.btn-nav {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-nav:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.btn-nav svg { width: 15px; height: 15px; }
+
+/* ─── Hero ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 7rem 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid background */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,217,245,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,217,245,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Glow orbs */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, rgba(0,217,245,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  background: var(--accent-dim);
+  border: 1px solid rgba(0,217,245,0.2);
+  border-radius: 100px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: badge-pulse 3s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,217,245,0); }
+  50% { box-shadow: 0 0 0 6px rgba(0,217,245,0.08); }
+}
+
+.hero h1 {
+  font-weight: 800;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  margin-bottom: 1.5rem;
+  max-width: 860px;
+  position: relative;
+}
+
+.hero h1 .grad {
+  background: linear-gradient(130deg, #ffffff 30%, var(--accent) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted2);
+  max-width: 540px;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+.hero-cta { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.25s;
+  letter-spacing: -0.01em;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,217,245,0.3); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  background: transparent;
+  color: var(--text);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid var(--border2);
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: var(--muted2); background: rgba(255,255,255,0.03); }
+
+.hero-scroll {
+  margin-top: 4rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ─── Section layout ─── */
+.section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+.section-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.section-label::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--accent);
+}
+
+.section-title {
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  letter-spacing: -0.03em;
+  margin-bottom: 0.75rem;
+  line-height: 1.1;
+}
+
+.section-sub {
+  color: var(--muted2);
+  font-size: 1rem;
+  max-width: 500px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ─── Demo section ─── */
+.demo-section {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 5rem 0;
+}
+
+.demo-tabs {
+  display: flex; gap: 0.4rem;
+  margin-bottom: 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.3rem;
+  width: fit-content;
+}
+
+.demo-tab {
+  padding: 0.5rem 1.2rem;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.demo-tab.active {
+  background: var(--surface2);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.demo-panel { display: none; }
+.demo-panel.active { display: block; animation: fade-in 0.4s ease; }
+
+@keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ─── Browser chrome ─── */
+.browser-chrome {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.browser-bar {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.browser-dots { display: flex; gap: 0.4rem; }
+.browser-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.browser-dot.r { background: #ff5f57; }
+.browser-dot.y { background: #febc2e; }
+.browser-dot.g { background: #28c840; }
+
+.browser-url {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.browser-body {
+  padding: 1.25rem;
+  min-height: 340px;
+  background: var(--bg);
+}
+
+/* ─── DataQGuard demo ─── */
+.dqg-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.metric-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.metric-card .value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.metric-card .delta {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+.delta.up { color: var(--green); }
+.delta.down { color: var(--rose); }
+
+.sparkline {
+  margin-top: 0.6rem;
+  height: 30px;
+  display: flex; align-items: flex-end; gap: 2px;
+}
+
+.spark-bar {
+  flex: 1;
+  background: var(--accent-dim2);
+  border-radius: 2px 2px 0 0;
+  transition: height 1s ease;
+  animation: spark-rise 2s ease forwards;
+}
+
+@keyframes spark-rise { from { height: 0; } to { height: var(--h); } }
+
+.dqg-alert-row {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--rose);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  display: flex; align-items: center; gap: 1rem;
+  font-size: 0.82rem;
+}
+.dqg-alert-row .alert-icon { font-size: 1.1rem; }
+.dqg-alert-row .alert-msg { flex: 1; color: var(--muted2); }
+.dqg-alert-row .alert-time { color: var(--muted); font-size: 0.75rem; }
+.dqg-alert-row .badge-warn {
+  background: var(--rose-dim);
+  color: var(--rose);
+  border-radius: 6px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ─── ai-data-analyst demo ─── */
+.aida-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 320px;
+  overflow: hidden;
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  animation: msg-in 0.4s ease;
+}
+@keyframes msg-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: var(--accent-dim2);
+  border: 1px solid rgba(0,217,245,0.2);
+  color: var(--text);
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.user::before { content: '🧑'; margin-right: 0.4rem; font-size: 0.8rem; }
+
+.chat-msg.assistant {
+  align-self: flex-start;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.assistant::before { content: '🤖'; margin-right: 0.4rem; font-size: 0.8rem; }
+
+.sql-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--green);
+  margin-top: 0.4rem;
+  overflow-x: auto;
+}
+
+.chart-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
+  display: flex; align-items: flex-end; gap: 4px; height: 60px;
+}
+
+.chart-bar-anim {
+  flex: 1;
+  background: linear-gradient(to top, var(--accent), rgba(0,217,245,0.4));
+  border-radius: 3px 3px 0 0;
+  animation: chart-grow 1.5s ease forwards;
+}
+@keyframes chart-grow { from { height: 0; } to { height: var(--h); } }
+
+.aida-input-row {
+  display: flex; gap: 0.5rem; margin-top: 0.5rem;
+}
+.aida-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-family: 'Outfit', sans-serif;
+}
+.aida-send {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: send-blink 0.5s ease 3s forwards;
+  opacity: 0;
+}
+@keyframes send-blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ─── etl-toolkit demo ─── */
+.etl-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.etl-node {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 90px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.etl-node.source { border-color: rgba(0,217,245,0.3); color: var(--accent); }
+.etl-node.transform { border-color: rgba(167,139,250,0.3); color: var(--violet); }
+.etl-node.qc { border-color: rgba(61,255,160,0.3); color: var(--green); }
+.etl-node.sink { border-color: rgba(255,181,71,0.3); color: var(--amber); }
+
+.etl-arrow {
+  flex: 1;
+  display: flex; align-items: center;
+  min-width: 30px;
+}
+
+.etl-packet {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: packet-flow 1.2s ease-in-out infinite;
+  position: relative;
+}
+.etl-packet::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0.3;
+  animation: packet-ring 1.2s ease-in-out infinite;
+}
+@keyframes packet-flow {
+  0% { opacity: 0; transform: translateX(-20px); }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(20px); }
+}
+@keyframes packet-ring {
+  0% { transform: scale(0.5); opacity: 0.5; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.etl-log {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin-top: 1rem;
+  max-height: 120px;
+  overflow: hidden;
+}
+.log-line { display: flex; gap: 0.75rem; margin-bottom: 0.3rem; }
+.log-ts { color: var(--muted); flex-shrink: 0; }
+.log-ok { color: var(--green); }
+.log-warn { color: var(--amber); }
+.log-info { color: var(--accent); }
+.log-row { animation: log-scroll 0.3s ease; }
+@keyframes log-scroll { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── Products grid ─── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.product-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: default;
+}
+.product-card:hover { transform: translateY(-5px); border-color: var(--border2); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+
+.product-card .top-line {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 18px 18px 0 0;
+}
+
+.product-card.accent .top-line { background: linear-gradient(90deg, var(--accent), transparent); }
+.product-card.amber .top-line { background: linear-gradient(90deg, var(--amber), transparent); }
+.product-card.green .top-line { background: linear-gradient(90deg, var(--green), transparent); }
+
+.product-card .card-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 1.25rem;
+}
+.product-card.accent .card-icon { background: var(--accent-dim); }
+.product-card.amber .card-icon { background: var(--amber-dim); }
+.product-card.green .card-icon { background: var(--green-dim); }
+
+.product-card h3 {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+.product-card .desc {
+  color: var(--muted2);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  font-weight: 300;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+.tag {
+  padding: 0.2rem 0.65rem;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.links { display: flex; gap: 1rem; }
+.links a {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted2);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 0.3rem;
+  transition: color 0.2s;
+}
+.links a:hover { color: var(--accent); }
+
+/* ─── Tech stack ─── */
+.stack-section {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 2rem;
+}
+.stack-inner { max-width: 1200px; margin: 0 auto; text-align: center; }
+.stack-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 2rem; }
+.stack-badge {
+  padding: 0.45rem 1rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted2);
+  background: var(--surface);
+  transition: all 0.2s;
+}
+.stack-badge:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+/* ─── Features ─── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.feature-item {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  transition: all 0.2s;
+}
+.feature-item:hover { border-color: rgba(0,217,245,0.2); background: var(--surface2); }
+
+.feat-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.9rem;
+  font-size: 1rem;
+}
+.feature-item h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+.feature-item p { color: var(--muted2); font-size: 0.84rem; line-height: 1.6; font-weight: 300; }
+
+/* ─── CTA ─── */
+.cta-section {
+  text-align: center;
+  padding: 8rem 2rem;
+  position: relative;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 400px;
+  background: radial-gradient(ellipse, rgba(0,217,245,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+.cta-section p { color: var(--muted2); font-size: 1.05rem; max-width: 460px; margin: 0 auto 2.5rem; font-weight: 300; }
+.cta-flex { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+
+/* ─── Footer ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+footer a { color: var(--accent); text-decoration: none; }
+
+/* ─── Reveal ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ─── Code block ─── */
+.code-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.75;
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+.code-block .c { color: #6272a4; font-style: italic; }
+.code-block .k { color: #ff79c6; }
+.code-block .f { color: #50fa7b; }
+.code-block .s { color: #f1fa8c; }
+.code-block .n { color: #bd93f9; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Nav ─── -->
+<nav>
+  <a href="#" class="logo">kaisong<span class="dot">.</span>dev</a>
+  <div class="links">
+    <a href="#demos">Demos</a>
+    <a href="#products">Projects</a>
+    <a href="#stack">Stack</a>
+    <a href="#why">Why</a>
+    <a href="https://github.com/KaiSong-UK" class="btn-nav" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- ─── Hero ─── -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="var(--accent)"/></svg>
+    Open Source · Production Ready · MIT License
+  </div>
+
+  <h1>
+    Data engineering tools<br>
+    <span class="grad">built to ship.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Three focused, production-grade open source projects — from data quality monitoring
+    to natural language analytics and ETL pipelines. Not toys. Real code you can deploy.
+  </p>
+
+  <div class="hero-cta">
+    <a href="https://github.com/KaiSong-UK" class="btn-primary" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      View All Repos
+    </a>
+    <a href="#demos" class="btn-ghost">See Live Demos ↓</a>
+  </div>
+
+  <div class="hero-scroll">
+    <span>scroll</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</section>
+
+<!-- ─── Demos ─── -->
+<section class="demo-section" id="demos">
+  <div class="section" style="padding-top: 0; padding-bottom: 0;">
+    <div class="reveal">
+      <div class="section-label">Live Animations</div>
+      <h2 class="section-title">Watch them work.</h2>
+      <p class="section-sub">CSS-animated UI mockups — no setup required.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 2.5rem;">
+    <!-- Tabs -->
+    <div class="demo-tabs reveal">
+      <button class="demo-tab active" onclick="switchTab('dqg')">
+        🛡️ DataQGuard
+      </button>
+      <button class="demo-tab" onclick="switchTab('aida')">
+        🧠 ai-data-analyst
+      </button>
+      <button class="demo-tab" onclick="switchTab('etl')">
+        ⚙️ etl-toolkit
+      </button>
+    </div>
+
+    <!-- DataQGuard -->
+    <div class="demo-panel active" id="panel-dqg">
+      <div class="browser-chrome reveal">
+        <div class="browser-bar">
+          <div class="browser-dots"><div class="browser-dot r"></div><div class="browser-dot y"></div><div class="browser-dot g"></div></div>
+          <div class="browser-url">dataqguard.io/dashboard</div>
+        </div>
+        <div class="browser-body">
+          <div class="dqg-dashboard">
+            <div class="metric-card">
+              <div class="label">Completeness Score</div>
+              <div class="value" style="color:var(--green)">98.4%</div>
+              <div class="delta up">↑ 2.1% vs last week</div>
+              <div class="sparkline">
+                <div class="spark-bar" style="--h:40px;animation-delay:0.1s"></div>
+                <div class="spark-bar" style="--h:55px;animation-delay:0.2s"></div>
+                <div class="spark-bar" style="--h:48px;animation-delay:0.3s"></div>
+                <div class="spark-bar" style="--h:62px;animation-delay:0.4s"></div>
+                <div class="spark-bar" style="--h:58px;animation-delay:0.5s"></div>
+                <div class="spark-bar" style="--h:70px;animation-delay:0.6s"></div>
+                <div class="spark-bar" style="--h:85px;animation-delay:0.7s"></div>
+                <div class="spark-bar" style="--h:90px;animation-delay:0.8s"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Anomalies Detected</div>
+              <div class="value" style="color:var(--rose)">7</div>
+              <div class="delta down">↑ 3 new today</div>
+              <div class="sparkline">
+                <div class="spark-bar" style="--h:30px;animation-delay:0.2s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:25px;animation-delay:0.4s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:45px;animation-delay:0.6s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:40px;animation-delay:0.8s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:55px;animation-delay:1.0s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:60px;animation-delay:1.2s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:50px;animation-delay:1.4s;background:rgba(255,107,157,0.2)"></div>
+                <div class="spark-bar" style="--h:65px;animation-delay:1.6s;background:rgba(255,107,157,0.2)"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Pipeline Runs</div>
+              <div class="value" style="color:var(--accent)">1,284</div>
+              <div class="delta up">All healthy</div>
+              <div class="sparkline">
+                <div class="spark-bar" style="--h:50px;animation-delay:0.3s"></div>
+                <div class="spark-bar" style="--h:65px;animation-delay:0.5s"></div>
+                <div class="spark-bar" style="--h:55px;animation-delay:0.7s"></div>
+                <div class="spark-bar" style="--h:80px;animation-delay:0.9s"></div>
+                <div class="spark-bar" style="--h:75px;animation-delay:1.1s"></div>
+                <div class="spark-bar" style="--h:90px;animation-delay:1.3s"></div>
+                <div class="spark-bar" style="--h:85px;animation-delay:1.5s"></div>
+                <div class="spark-bar" style="--h:95px;animation-delay:1.7s"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="label">Avg Latency</div>
+              <div class="value" style="color:var(--amber)">142ms</div>
+              <div class="delta up">↓ 18ms improved</div>
+              <div class="sparkline">
+                <div class="spark-bar" style="--h:90px;animation-delay:0.2s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:75px;animation-delay:0.4s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:60px;animation-delay:0.6s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:70px;animation-delay:0.8s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:50px;animation-delay:1.0s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:40px;animation-delay:1.2s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:30px;animation-delay:1.4s;background:rgba(255,181,71,0.2)"></div>
+                <div class="spark-bar" style="--h:25px;animation-delay:1.6s;background:rgba(255,181,71,0.2)"></div>
+              </div>
+            </div>
+            <div class="dqg-alert-row">
+              <div class="alert-icon">🚨</div>
+              <div class="alert-msg">users.email — 3 null values detected in last sync</div>
+              <div class="badge-warn">CRITICAL</div>
+              <div class="alert-time">2 min ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ai-data-analyst -->
+    <div class="demo-panel" id="panel-aida">
+      <div class="browser-chrome reveal">
+        <div class="browser-bar">
+          <div class="browser-dots"><div class="browser-dot r"></div><div class="browser-dot y"></div><div class="browser-dot g"></div></div>
+          <div class="browser-url">localhost:8000/analyst</div>
+        </div>
+        <div class="browser-body">
+          <div class="aida-chat">
+            <div class="chat-msg user" style="animation-delay:0.3s">What were our monthly revenue trends in Q3?</div>
+            <div class="chat-msg assistant" style="animation-delay:1.2s">
+              Here's the SQL query generated to answer your question:
+              <div class="sql-block">SELECT DATE_TRUNC('month', created_at) AS month,
+       SUM(amount) AS revenue
+FROM orders
+WHERE created_at >= '2025-07-01'
+  AND created_at < '2025-10-01'
+GROUP BY 1
+ORDER BY 1;</div>
+            </div>
+            <div class="chat-msg assistant" style="animation-delay:3s">
+              Results (3 months):
+              <div class="chart-preview">
+                <div class="chart-bar-anim" style="--h:45px;animation-delay:3.1s"></div>
+                <div class="chart-bar-anim" style="--h:70px;animation-delay:3.3s"></div>
+                <div class="chart-bar-anim" style="--h:95px;animation-delay:3.5s"></div>
+                <div class="chart-bar-anim" style="--h:60px;animation-delay:3.7s"></div>
+              </div>
+              Jul $128K · Aug $215K · Sep $312K · Oct $186K
+            </div>
+          </div>
+          <div class="aida-input-row">
+            <div class="aida-input">Ask your database anything...</div>
+            <button class="aida-send">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- etl-toolkit -->
+    <div class="demo-panel" id="panel-etl">
+      <div class="browser-chrome reveal">
+        <div class="browser-bar">
+          <div class="browser-dots"><div class="browser-dot r"></div><div class="browser-dot y"></div><div class="browser-dot g"></div></div>
+          <div class="browser-url">python daily_sync.py</div>
+        </div>
+        <div class="browser-body">
+          <div class="etl-flow">
+            <div class="etl-node source">📥 DB Source</div>
+            <div class="etl-arrow"><div class="etl-packet" style="animation-delay:0s"></div></div>
+            <div class="etl-node qc">✅ QC Check</div>
+            <div class="etl-arrow"><div class="etl-packet" style="animation-delay:0.6s"></div></div>
+            <div class="etl-node transform">🔄 Transform</div>
+            <div class="etl-arrow"><div class="etl-packet" style="animation-delay:1.2s"></div></div>
+            <div class="etl-node sink">📤 Warehouse</div>
+          </div>
+          <div class="etl-log">
+            <div class="log-line log-row" style="animation-delay:0.2s">
+              <span class="log-ts">09:00:01</span>
+              <span class="log-ok">[✓]</span>
+              <span>🚀 Pipeline 'daily_user_sync' started</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:0.6s">
+              <span class="log-ts">09:00:01</span>
+              <span class="log-info">[→]</span>
+              <span>Reading from users WHERE updated_at > 2025-04-13</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:1.0s">
+              <span class="log-ts">09:00:03</span>
+              <span class="log-info">[→]</span>
+              <span>Read 4,821 rows from PostgreSQL</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:1.4s">
+              <span class="log-ts">09:00:03</span>
+              <span class="log-ok">[✓]</span>
+              <span>Quality check 'check_completeness' — 0 failures</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:1.8s">
+              <span class="log-ts">09:00:03</span>
+              <span class="log-info">[→]</span>
+              <span>Transform 'normalize_email' — 4,821 rows processed</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:2.2s">
+              <span class="log-ts">09:00:05</span>
+              <span class="log-ok">[✓]</span>
+              <span>Upserted 4,821 rows into dim_users (0 duplicates)</span>
+            </div>
+            <div class="log-line log-row" style="animation-delay:2.5s">
+              <span class="log-ts">09:00:05</span>
+              <span class="log-ok">[✓]</span>
+              <span>✅ Pipeline done in 4,102ms — 4,821 rows written</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── Products ─── -->
+<section class="section" id="products">
+  <div class="reveal">
+    <div class="section-label">Projects</div>
+    <h2 class="section-title">Three tools. One coherent stack.</h2>
+    <p class="section-sub">Each project solves one specific problem well. Together, they cover the modern data stack from ingestion to insight.</p>
+  </div>
+
+  <div class="products-grid">
+    <div class="product-card accent reveal">
+      <div class="top-line"></div>
+      <div class="card-icon">🛡️</div>
+      <h3>DataQGuard</h3>
+      <p class="desc">Enterprise data quality monitoring. Catch anomalies, track SLA, and enforce schema rules before bad data hits your dashboards.</p>
+      <div class="tags">
+        <span class="tag">FastAPI</span>
+        <span class="tag">React</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Celery</span>
+        <span class="tag">Docker</span>
+      </div>
+      <div class="links">
+        <a href="https://github.com/KaiSong-UK/DataQGuard" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          Source
+        </a>
+        <a href="#demos">Demo →</a>
+      </div>
+    </div>
+
+    <div class="product-card amber reveal">
+      <div class="top-line"></div>
+      <div class="card-icon">🧠</div>
+      <h3>ai-data-analyst</h3>
+      <p class="desc">Natural language → SQL → Chart. Connect any database, ask questions in plain English, get answers and visualizations instantly.</p>
+      <div class="tags">
+        <span class="tag">OpenAI</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">React</span>
+        <span class="tag">Recharts</span>
+        <span class="tag">SQLAlchemy</span>
+      </div>
+      <div class="links">
+        <a href="https://github.com/KaiSong-UK/ai-data-analyst" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          Source
+        </a>
+        <a href="#demos">Demo →</a>
+      </div>
+    </div>
+
+    <div class="product-card green reveal">
+      <div class="top-line"></div>
+      <div class="card-icon">⚙️</div>
+      <h3>etl-toolkit</h3>
+      <p class="desc">Lightweight ETL framework for Python. Define pipelines with built-in quality checks, retries, and connectors — zero infra overhead.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">SQL</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">MIT</span>
+      </div>
+      <div class="links">
+        <a href="https://github.com/KaiSong-UK/etl-toolkit" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          Source
+        </a>
+        <a href="#demos">Demo →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code snippet -->
+  <div class="code-block reveal">
+<span class="c"># etl-toolkit — define, observe, ship pipelines</span>
+<span class="k">from</span> etl_toolkit <span class="k">import</span> <span class="f">Pipeline</span>, <span class="f">ReadDatabase</span>, <span class="f">QualityCheck</span>, <span class="f">Transform</span>, <span class="f">WriteDatabase</span>
+
+pipeline = (<span class="f">Pipeline</span>(<span class="s">"daily_user_sync"</span>)
+    .add_step(<span class="f">ReadDatabase</span>(
+        connection=<span class="s">"postgresql://user:pass@host/db"</span>,
+        query=<span class="s">"SELECT * FROM users WHERE updated_at > :last_run"</span>
+    ))
+    .add_step(<span class="f">QualityCheck</span>(
+        name=<span class="s">"check_completeness"</span>,
+        rules=[{
+            <span class="s">"type"</span>: <span class="s">"not_null"</span>,
+            <span class="s">"columns"</span>: [<span class="s">"user_id"</span>, <span class="s">"email"</span>]
+        }],
+        on_fail=<span class="s">"warn"</span>
+    ))
+    .add_step(<span class="f">Transform</span>(
+        name=<span class="s">"normalize_email"</span>,
+        fn=<span class="k">lambda</span> rows: [{**r, <span class="s">"email"</span>: r[<span class="s">"email"</span>].lower()} <span class="k">for</span> r <span class="k">in</span> rows]
+    ))
+    .add_step(<span class="f">WriteDatabase</span>(
+        connection=<span class="s">"postgresql://..."</span>,
+        table=<span class="s">"dim_users"</span>,
+        mode=<span class="s">"upsert"</span>,
+        key_columns=[<span class="s">"user_id"</span>]
+    ))
+)
+
+result = pipeline.run()
+<span class="k">print</span>(<span class="s">f"Done. {result.rows_written} rows in {result.total_duration_ms:.1f}ms"</span>)
+  </div>
+</section>
+
+<!-- ─── Tech Stack ─── -->
+<div class="stack-section" id="stack">
+  <div class="stack-inner reveal">
+    <div class="section-label" style="justify-content:center">Tech Stack</div>
+    <h2 class="section-title">Full-stack ownership.</h2>
+    <p class="section-sub" style="margin:0 auto;">From schema to deployment — every layer of the stack, owned.</p>
+    <div class="stack-badges">
+      <span class="stack-badge">Python</span>
+      <span class="stack-badge">FastAPI</span>
+      <span class="stack-badge">SQLAlchemy</span>
+      <span class="stack-badge">React</span>
+      <span class="stack-badge">TypeScript</span>
+      <span class="stack-badge">Vite</span>
+      <span class="stack-badge">PostgreSQL</span>
+      <span class="stack-badge">Docker</span>
+      <span class="stack-badge">Docker Compose</span>
+      <span class="stack-badge">Celery</span>
+      <span class="stack-badge">Redis</span>
+      <span class="stack-badge">OpenAI API</span>
+      <span class="stack-badge">Recharts</span>
+      <span class="stack-badge">Pydantic</span>
+      <span class="stack-badge">pytest</span>
+      <span class="stack-badge">GitHub Actions</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Features ─── -->
+<section class="section" id="why">
+  <div class="reveal">
+    <div class="section-label">Why This Stack</div>
+    <h2 class="section-title">Built with the stack that ships.</h2>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item reveal">
+      <div class="feat-icon">🚀</div>
+      <h4>Production-First</h4>
+      <p>Every project has Docker Compose, env config, error handling, and CI-ready structure. Not just working code — deployable code.</p>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feat-icon">📊</div>
+      <h4>Full-Stack Breadth</h4>
+      <p>Database schema design, REST APIs, background workers, reactive frontends, and real-time visualization. End-to-end ownership.</p>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feat-icon">🧩</div>
+      <h4>Composable Architecture</h4>
+      <p>Modular design means each piece can be used independently or together. ETL works standalone; the dashboard works standalone.</p>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feat-icon">⚡</div>
+      <h4>LLM-Integrated</h4>
+      <p>ai-data-analyst shows production-grade LLM integration — schema context, SQL safety, cost control, graceful error recovery.</p>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feat-icon">🛡️</div>
+      <h4>Quality at the Source</h4>
+      <p>DataQGuard and etl-toolkit enforce data quality at ingestion time — catch bad data before the fire drill, not after.</p>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feat-icon">📖</div>
+      <h4>Documentation First</h4>
+      <p>Every project has a README with architecture diagram, setup guide, environment config, and usage examples. Code you can hand over.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-section">
+  <div class="reveal">
+    <h2>Ready to build<br><span style="color:var(--accent)">something real?</span></h2>
+    <p>Clone a repo, run <code style="background:var(--surface2);padding:0.2rem 0.5rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.9em">docker compose up</code>, and see it running in under 5 minutes.</p>
+    <div class="cta-flex">
+      <a href="https://github.com/KaiSong-UK" class="btn-primary" target="_blank">Browse All Repos</a>
+      <a href="https://github.com/KaiSong-UK/DataQGuard" class="btn-ghost" target="_blank">Start with DataQGuard →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ─── -->
+<footer>
+  <p>Kai Song · <a href="https://github.com/KaiSong-UK" target="_blank">GitHub</a> · <a href="mailto:kaisong.uk@outlook.com">kaisong.uk@outlook.com</a></p>
+</footer>
+
+<!-- ─── Scripts ─── -->
+<script>
+  // Tab switcher
+  function switchTab(name) {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
