@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kai Song — Freelance Services / 自由职业服务</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060910;
+  --surface: #0d1220;
+  --surface2: #111827;
+  --border: #1e2d4a;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0,229,255,0.12);
+  --amber: #ff9100;
+  --amber-dim: rgba(255,145,0,0.12);
+  --violet: #b388ff;
+  --green: #69ff97;
+  --green-dim: rgba(105,255,151,0.12);
+  --pink: #ff79c6;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+/* ─── Nav ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(6,9,16,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(30,45,74,0.5);
+}
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; }
+.logo span { color: var(--cyan); }
+nav .links { display: flex; gap: 2rem; align-items: center; }
+nav .links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
+nav .links a:hover { color: var(--text); }
+nav .links a.active { color: var(--cyan); }
+
+.btn-ghost {
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--cyan); }
+
+/* ─── Language Toggle ─── */
+.lang-toggle {
+  position: fixed; top: 70px; right: 2rem; z-index: 100;
+  display: flex; gap: 0.5rem;
+}
+.lang-btn {
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-btn.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+
+/* ─── Hero ─── */
+.hero {
+  padding: 9rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.section-label {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--cyan); font-weight: 600; margin-bottom: 1rem;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+  margin-bottom: 1.2rem;
+  line-height: 1.1;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 580px;
+  margin: 0 auto 2rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* ─── Section ─── */
+.section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+.section-center { text-align: center; }
+
+/* ─── Pricing Cards ─── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  position: relative;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.card:hover { transform: translateY(-4px); }
+
+.card.featured {
+  border-color: rgba(0,229,255,0.35);
+  background: linear-gradient(180deg, rgba(0,229,255,0.06) 0%, var(--surface) 60%);
+}
+.card.featured::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+  border-radius: 20px 20px 0 0;
+}
+
+.card-badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cyan);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.card .card-desc {
+  color: var(--muted); font-size: 0.9rem; line-height: 1.6;
+  margin-bottom: 1.5rem;
+  min-height: 3rem;
+}
+
+.card .price {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.card .price-sub {
+  color: var(--muted); font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.card .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+.card .features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.card .features li {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  font-size: 0.875rem; color: var(--muted);
+}
+.card .features li .icon { flex-shrink: 0; margin-top: 2px; }
+.card.featured .features li { color: var(--text); }
+
+.card .cta-btn {
+  display: block;
+  width: 100%; margin-top: 1.5rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-weight: 600; font-size: 0.95rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+.card .cta-btn.primary {
+  background: var(--cyan);
+  color: var(--bg);
+}
+.card .cta-btn.primary:hover { box-shadow: 0 6px 24px rgba(0,229,255,0.25); }
+.card .cta-btn.outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.card .cta-btn.outline:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ─── Table ─── */
+.table-section { padding: 5rem 2rem; }
+.table-wrap { overflow-x: auto; margin-top: 2.5rem; border-radius: 16px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th {
+  background: var(--surface);
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 600; font-size: 0.8rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(30,45,74,0.5);
+  color: var(--text);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+td .tag {
+  display: inline-block; padding: 0.2rem 0.6rem;
+  border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+  background: var(--cyan-dim); color: var(--cyan);
+  border: 1px solid rgba(0,229,255,0.15);
+}
+td .tag.warning { background: var(--amber-dim); color: var(--amber); border-color: rgba(255,145,0,0.15); }
+td .tag.info { background: var(--violet-dim); color: var(--violet); border-color: rgba(179,136,255,0.15); }
+
+/* ─── Process ─── */
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.process-item {
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+.process-icon {
+  font-size: 2rem; margin-bottom: 1rem;
+}
+.process-item h4 {
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.process-item p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+/* ─── CTA ─── */
+.cta-section {
+  text-align: center;
+  padding: 6rem 2rem;
+  position: relative;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(0,229,255,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+.cta-section p { color: var(--muted); max-width: 480px; margin: 0 auto 2rem; }
+.btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: var(--cyan); color: var(--bg);
+  border-radius: 10px; font-weight: 600; font-size: 0.95rem;
+  text-decoration: none; transition: box-shadow 0.2s;
+}
+.btn-primary:hover { box-shadow: 0 8px 30px rgba(0,229,255,0.25); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; font-weight: 500; font-size: 0.95rem;
+  text-decoration: none; transition: border-color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--muted); }
+
+/* ─── Footer ─── */
+footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+footer a { color: var(--cyan); text-decoration: none; }
+
+/* ─── Bilingual: hide by language ─── */
+[lang="zh-CN"] .en { display: none !important; }
+[lang="en"] .zh { display: none !important; }
+</style>
+</head>
+<body lang="zh-CN">
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="logo">kaisong<span>.</span>dev</a>
+  <div class="links">
+    <a href="index.html"><span class="zh">首页</span><span class="en">Home</span></a>
+    <a href="pricing.html" class="active"><span class="zh">报价</span><span class="en">Pricing</span></a>
+    <a href="https://github.com/KaiSong-UK" target="_blank" class="btn-ghost">
+      <span class="zh">GitHub</span><span class="en">GitHub</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Language Toggle -->
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('zh-CN')">中文</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="section-label">
+    <span class="zh">💼 自由职业服务</span>
+    <span class="en">💼 Freelance Services</span>
+  </div>
+  <h1>
+    <span class="zh">专业开发服务<br>按项目透明报价</span>
+    <span class="en">Professional Development<br>Transparent Per-Project Pricing</span>
+  </h1>
+  <p class="subtitle">
+    <span class="zh">数据质量 · AI 集成 · 全栈开发 · ETL 管道</span>
+    <span class="en">Data Quality · AI Integration · Full-Stack Dev · ETL Pipelines</span>
+  </p>
+</section>
+
+<!-- Pricing Cards -->
+<section class="section">
+  <div class="pricing-grid">
+
+    <!-- 基础 -->
+    <div class="card">
+      <h3><span class="zh">基础</span><span class="en">Starter</span></h3>
+      <p class="card-desc">
+        <span class="zh">Bug 修复、小功能、数据清洗、单脚本</span>
+        <span class="en">Bug fixes, small features, data cleaning, single scripts</span>
+      </p>
+      <div class="price">¥2,000 – ¥8,000</div>
+      <div class="price-sub"><span class="zh">1–2 周交付</span><span class="en">1–2 weeks</span></div>
+      <div class="divider"></div>
+      <ul class="features">
+        <li><span class="icon">✅</span><span class="zh">Bug 修复 / 小改动</span><span class="en">Bug fixes / small changes</span></li>
+        <li><span class="icon">✅</span><span class="zh">数据清洗 / 迁移脚本</span><span class="en">Data cleaning / migration scripts</span></li>
+        <li><span class="icon">✅</span><span class="zh">GitHub PR 提交</span><span class="en">GitHub PR submission</span></li>
+        <li><span class="icon">✅</span><span class="zh">基础文档</span><span class="en">Basic documentation</span></li>
+        <li><span class="icon">✅</span><span class="zh">7 天售后</span><span class="en">7-day support</span></li>
+      </ul>
+      <button class="cta-btn outline" onclick="startChat('Starter')">
+        <span class="zh">开始咨询 →</span><span class="en">Start Inquiry →</span>
+      </button>
+    </div>
+
+    <!-- 标准 · 推荐 -->
+    <div class="card featured">
+      <span class="card-badge"><span class="zh">推荐</span><span class="en">Popular</span></span>
+      <h3><span class="zh">标准</span><span class="en">Standard</span></h3>
+      <p class="card-desc">
+        <span class="zh">中型功能模块、数据质量监控、API 开发、Dashboard</span>
+        <span class="en">Medium features, data quality monitoring, API dev, dashboards</span>
+      </p>
+      <div class="price">¥8,000 – ¥30,000</div>
+      <div class="price-sub"><span class="zh">2–4 周交付</span><span class="en">2–4 weeks</span></div>
+      <div class="divider"></div>
+      <ul class="features">
+        <li><span class="icon">✅</span><span class="zh">完整功能模块</span><span class="en">Full feature module</span></li>
+        <li><span class="icon">✅</span><span class="zh">数据质量监控 / ETL 管道</span><span class="en">Data quality monitoring / ETL pipeline</span></li>
+        <li><span class="icon">✅</span><span class="zh">React / FastAPI 全栈</span><span class="en">React / FastAPI full-stack</span></li>
+        <li><span class="icon">✅</span><span class="zh">单元测试 + CI/CD</span><span class="en">Unit tests + CI/CD</span></li>
+        <li><span class="icon">✅</span><span class="zh">完整文档 + 部署指南</span><span class="en">Full docs + deployment guide</span></li>
+        <li><span class="icon">✅</span><span class="zh">30 天售后</span><span class="en">30-day support</span></li>
+      </ul>
+      <button class="cta-btn primary" onclick="startChat('Standard')">
+        <span class="zh">立即咨询 →</span><span class="en">Get a Quote →</span>
+      </button>
+    </div>
+
+    <!-- 企业 -->
+    <div class="card">
+      <h3><span class="zh">企业</span><span class="en">Enterprise</span></h3>
+      <p class="card-desc">
+        <span class="zh">复杂系统、AI 集成、架构设计、技术咨询</span>
+        <span class="en">Complex systems, AI integration, architecture design, consulting</span>
+      </p>
+      <div class="price">¥30,000+</div>
+      <div class="price-sub"><span class="zh">按项目议价</span><span class="en">Custom quote</span></div>
+      <div class="divider"></div>
+      <ul class="features">
+        <li><span class="icon">✅</span><span class="zh">大型系统 / 平台搭建</span><span class="en">Large system / platform build</span></li>
+        <li><span class="icon">✅</span><span class="zh">AI / LLM / RAG 集成</span><span class="en">AI / LLM / RAG integration</span></li>
+        <li><span class="icon">✅</span><span class="zh">数据架构设计</span><span class="en">Data architecture design</span></li>
+        <li><span class="icon">✅</span><span class="zh">代码审计 + 优化</span><span class="en">Code audit + optimization</span></li>
+        <li><span class="icon">✅</span><span class="zh">技术咨询 / 架构评审</span><span class="en">Technical consulting / review</span></li>
+        <li><span class="icon">✅</span><span class="zh">长期合作</span><span class="en">Long-term partnership</span></li>
+      </ul>
+      <button class="cta-btn outline" onclick="startChat('Enterprise')">
+        <span class="zh">联系我们 →</span><span class="en">Contact Me →</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Detailed Pricing Table -->
+<section class="section table-section">
+  <div class="section-center">
+    <div class="section-label"><span class="zh">📋 详细报价</span><span class="en">📋 Detailed Pricing</span></div>
+    <h2><span class="zh">按类型收费，透明无坑</span><span class="en">Transparent Pricing by Type</span></h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th><span class="zh">服务类型</span><span class="en">Service</span></th>
+          <th><span class="zh">说明</span><span class="en">Description</span></th>
+          <th><span class="zh">价格范围</span><span class="en">Price Range</span></th>
+          <th><span class="zh">工期</span><span class="en">Timeline</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span class="zh">数据质量监控</span><span class="en">Data Quality Monitoring</span></strong></td>
+          <td><span class="zh">数据健康度监控平台、规则引擎、告警系统</span><span class="en">Data health dashboard, rule engine, alerting system</span></td>
+          <td><strong>¥20,000 – ¥80,000</strong></td>
+          <td><span class="tag warning"><span class="zh">2–6 周</span><span class="en">2–6 wks</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">AI 数据分析助手</span><span class="en">AI Data Analyst</span></strong></td>
+          <td><span class="zh">自然语言 SQL 生成、图表自动生成、知识库问答</span><span class="en">NL→SQL, auto chart, RAG knowledge base Q&A</span></td>
+          <td><strong>¥15,000 – ¥50,000</strong></td>
+          <td><span class="tag warning"><span class="zh">1–4 周</span><span class="en">1–4 wks</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">ETL 数据管道</span><span class="en">ETL Pipeline</span></strong></td>
+          <td><span class="zh">数据抽取、清洗、转换、入仓，含数据质量检查</span><span class="en">Data extraction, cleaning, transformation, warehousing with quality checks</span></td>
+          <td><strong>¥8,000 – ¥30,000</strong></td>
+          <td><span class="tag"><span class="zh">1–3 周</span><span class="en">1–3 wks</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">AI 功能集成</span><span class="en">AI Integration</span></strong></td>
+          <td><span class="zh">给现有项目加 AI 能力（GPT/RAG/Agent/图片处理）</span><span class="en">Add AI to existing projects (GPT/RAG/Agent/image)</span></td>
+          <td><strong>¥10,000 – ¥50,000</strong></td>
+          <td><span class="tag warning"><span class="zh">1–4 周</span><span class="en">1–4 wks</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">企业后台 / 管理平台</span><span class="en">Admin Dashboard / Platform</span></strong></td>
+          <td><span class="zh">React + FastAPI 完整后台，含权限管理、数据展示</span><span class="en">Full admin platform with React + FastAPI, RBAC, data views</span></td>
+          <td><strong>¥30,000 – ¥100,000</strong></td>
+          <td><span class="tag warning"><span class="zh">3–8 周</span><span class="en">3–8 wks</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">代码审计 + 优化</span><span class="en">Code Audit & Optimization</span></strong></td>
+          <td><span class="zh">代码质量审计、性能分析、安全检查</span><span class="en">Code quality audit, performance analysis, security review</span></td>
+          <td><strong>¥5,000 – ¥15,000</strong></td>
+          <td><span class="tag"><span class="zh">3–7 天</span><span class="en">3–7 days</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span class="zh">技术咨询</span><span class="en">Tech Consulting</span></strong></td>
+          <td><span class="zh">数据架构评审、技术方案设计</span><span class="en">Data architecture review, tech design</span></td>
+          <td><strong>¥1,500 – ¥3,000<span class="zh">/天</span><span class="en">/day</span></strong></td>
+          <td><span class="tag info"><span class="zh">按需</span><span class="en">As needed</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="section">
+  <div class="section-center">
+    <div class="section-label"><span class="zh">⚡ 合作流程</span><span class="en">⚡ How We Work</span></div>
+    <h2><span class="zh">简单 4 步，开始合作</span><span class="en">4 Simple Steps to Get Started</span></h2>
+  </div>
+  <div class="process-grid">
+    <div class="process-item">
+      <div class="process-icon">💬</div>
+      <h4><span class="zh">1. 需求沟通</span><span class="en">1. Discuss Requirements</span></h4>
+      <p><span class="zh">微信 / 邮件深入了解你的需求，确定技术方案和报价</span><span class="en">WeChat / Email — deeply understand your needs and scope</span></p>
+    </div>
+    <div class="process-item">
+      <div class="process-icon">📝</div>
+      <h4><span class="zh">2. 签订合同</span><span class="en">2. Sign Contract</span></h4>
+      <p><span class="zh">明确交付内容、工期、付款方式，30% 预付款启动</span><span class="en">Define deliverables, timeline, payment — 30% upfront to start</span></p>
+    </div>
+    <div class="process-item">
+      <div class="process-icon">🚀</div>
+      <h4><span class="zh">3. 开发交付</span><span class="en">3. Develop & Deliver</span></h4>
+      <p><span class="zh">定期汇报进度，分阶段交付，每阶段验收后付款</span><span class="en">Regular updates, staged delivery, payment on milestone</span></p>
+    </div>
+    <div class="process-item">
+      <div class="process-icon">🎉</div>
+      <h4><span class="zh">4. 售后支持</span><span class="en">4. Post-Delivery Support</span></h4>
+      <p><span class="zh">代码交接、部署支持、免费售后期，需求范围内不限次修改</span><span class="en">Code handover, deployment support, free maintenance window</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-label"><span class="zh">🚀 立即开始</span><span class="en">🚀 Ready to Start?</span></div>
+  <h2><span class="zh">把你的想法，变成产品</span><span class="en">Turn Your Idea into a Product</span></h2>
+  <p>
+    <span class="zh">免费初步评估，最快当天报价</span>
+    <span class="en">Free initial assessment, quote within 24 hours</span>
+  </p>
+  <div class="btn-row">
+    <a href="https://github.com/KaiSong-UK" target="_blank" class="btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      <span class="zh">查看 GitHub</span><span class="en">View GitHub</span>
+    </a>
+    <a href="https://github.com/KaiSong-UK/DataQGuard" target="_blank" class="btn-secondary">
+      <span class="zh">看看 Demo →</span><span class="en">See Live Demo →</span>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    Kai Song · <a href="https://github.com/KaiSong-UK" target="_blank">GitHub</a> ·
+    <span class="zh">¥ RMB · 全球可接</span><span class="en">¥ RMB · Available Worldwide</span>
+  </p>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.includes(lang === 'zh-CN' ? '中文' : 'EN'));
+  });
+}
+
+function startChat(tier) {
+  const messages = {
+    Starter: '你好，我想咨询 Starter 基础服务（Bug 修复/小功能）',
+    Standard: '你好，我想咨询 Standard 标准服务（中型功能模块）',
+    Enterprise: '你好，我想咨询 Enterprise 企业服务（复杂系统/AI集成）'
+  };
+  const text = messages[tier] || '你好，我想咨询外包合作';
+  const url = 'https://github.com/KaiSong-UK';
+  alert(
+    (document.documentElement.lang === 'zh-CN'
+      ? '请通过以下方式联系我：\n1. GitHub Issues: ' + url + '/issues\n2. GitHub PR/Star 表示支持\n3. 站内联系\n\n期待合作！'
+      : 'Contact me via:\n1. GitHub Issues: ' + url + '/issues\n2. Star the repos!\n\nLooking forward to working together!'
+  ).replace('        ', '');
+  window.open(url, '_blank');
+}
+</script>
+
+</body>
+</html>
